@@ -57,8 +57,8 @@ Specification
     - Each `constituent` has:
       - `providers`, a dictionary of function name keys and provider function values.
 
-**boss.addFn(opts)
-  Where:
+**boss.addFn(opts)**
+  - Where:
     - opts is an object containing:
       - `fn`, a function
       - `providers`, an object in which:
@@ -67,13 +67,13 @@ Specification
           - Take a callback, `done`.
           - Call it with `error`, `params`, where:
             - `params` is an array of arguments to be passed to `fn`.
-  =>
+  - =>
     - Adds `fn` to `boss.fns`.
     - Adds values of `providers` to `constituent`.`providers` using values' function names as keys.
     - Adds a method with the name `fn.name` to each `constituent` with a value that is:
       - A function that calls a function using a parameters from the appropriate provider.
 
-**boss.<constituent c>.<function f>(params)** =>
+**boss.&lt;constituent c&gt;.&lt;function f&gt;(params)** =>
   - Gets provider `p` from `c`.
   - Calls `p` to get arguments, which it passes to `f`.
 
