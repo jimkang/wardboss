@@ -69,7 +69,7 @@ Specification
             - `params` is an array of arguments to be passed to `fn`.
   - =>
     - Adds `fn` to `boss.fns`.
-    - Adds values of `providers` to `constituent`.`providers` using values' function names as keys.
+    - Adds values of `providers` to `constituent`.`providers` using 'fn' name as key.
     - Adds a method with the name `fn.name` to each `constituent` with a value that is:
       - A function that calls a function using a parameters from the appropriate provider.
 

@@ -11,8 +11,9 @@
     "url": "git@github.com:jimkang/wardboss.git"
   },
   "keywords": [
-    "module",
-    "thing"
+    "dependency",
+    "injection",
+    "configuration"
   ],
   "author": "Jim Kang",
   "license": "MIT",
@@ -24,5 +25,6 @@
     "mocha": "~1.18.2"
   },
   "dependencies": {
+    "masala": "^1.3.0"
   }
 }
