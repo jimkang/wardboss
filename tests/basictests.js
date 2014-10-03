@@ -75,12 +75,12 @@ describe('addFn', function addFnSuite() {
       );
 
       assert.ok(
-        getConstructionDeals.name in boss['Back of the Yards'].providers,
+        dealParamsForBackOfTheYards.name in boss['Back of the Yards'].providers,
         'No provider added to Back of the Yards for getConstructionDeals'
       );
 
       assert.ok(
-        getConstructionDeals.name in boss.Cicero.providers,
+        dealParamsForCicero.name in boss.Cicero.providers,
         'No provider added to Cicero for getConstructionDeals'
       );
 
