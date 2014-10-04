@@ -8,6 +8,7 @@ describe('createBoss', function createBossSuite() {
       assert.equal(typeof testboss.addConstituent, 'function');
       assert.equal(typeof testboss.addFn, 'function');
       assert.equal(typeof testboss.fns, 'object');
+      assert.equal(typeof testboss.$, 'object');
       testDone();
     }
   );
@@ -18,8 +19,8 @@ describe('addConstituent', function addConstituentSuite() {
     function testAddConstituentToBoss(testDone) {
       var boss = wardboss.createBoss('Ed');
       boss.addConstituent('ventra');
-      assert.equal(typeof boss.ventra, 'object');
-      assert.equal(typeof boss.ventra.providers, 'object');
+      assert.equal(typeof boss.$.ventra, 'object');
+      assert.equal(typeof boss.$.ventra.providers, 'object');
       testDone();
     }
   );
@@ -75,33 +76,42 @@ describe('addFn', function addFnSuite() {
       );
 
       assert.ok(
-        getConstructionDeals.name in boss['Back of the Yards'].providers,
+        getConstructionDeals.name in boss.$['Back of the Yards'].providers,
         'No provider added to Back of the Yards with getConstructionDeals key'
       );
 
       assert.ok(
-        getConstructionDeals.name in boss.Cicero.providers,
+        getConstructionDeals.name in boss.$.Cicero.providers,
         'No provider added to Cicero with getConstructionDeals key'
       );
 
       assert.deepEqual(
-        boss['Back of the Yards'].providers[getConstructionDeals.name],
+        boss.$['Back of the Yards'].providers[getConstructionDeals.name],
         dealParamsForBackOfTheYards,
         'Incorrect provider for Back of the Yards and getConstructionDeals'
       );
 
       assert.deepEqual(
-        boss.Cicero.providers[getConstructionDeals.name],
+        boss.$.Cicero.providers[getConstructionDeals.name],
         dealParamsForCicero,
         'Incorrect provider for Cicero and getConstructionDeals'
       );
 
-      assert.ok(getConstructionDeals.name in boss['Back of the Yards']);
-      assert.ok(getConstructionDeals.name in boss.Cicero);
-      assert.equal(
-        typeof boss['Back of the Yards'].getConstructionDeals, 'function'
+      assert.ok(
+        getConstructionDeals.name in boss.$['Back of the Yards'],
+        'Did not add caller function named after getConstructionDeals to ' + 
+        'Back of the Yards'
       );
-      assert.equal(typeof boss.Cicero.getConstructionDeals, 'function');
+      assert.ok(
+        getConstructionDeals.name in boss.$.Cicero,
+        'Did not add caller function named after getConstructionDeals to ' + 
+        'Cicero'
+      );
+
+      assert.equal(
+        typeof boss.$['Back of the Yards'].getConstructionDeals, 'function'
+      );
+      assert.equal(typeof boss.$.Cicero.getConstructionDeals, 'function');
 
       testDone();
     }
