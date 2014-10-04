@@ -19,15 +19,18 @@ function createBoss(bossname) {
     }
   }
 
-  function addProviderForConstituent(provider, constituent) {
-    debugger;
-    boss[constituent].providers[provider.name] = provider;
+  function addFnProviderForConstituent(fn, provider, constituent) {
+    boss[constituent].providers[fn.name] = provider;
   }
 
   function addFn(opts) {
     boss.fns[opts.fn.name] = opts.fn;
 
     _.keys(opts.providers).forEach(addConstituentIfNotThere);
+
+    var addProviderForConstituent = 
+      _.curry(addFnProviderForConstituent)(opts.fn);
+
     _.each(opts.providers, addProviderForConstituent);
   }
 
