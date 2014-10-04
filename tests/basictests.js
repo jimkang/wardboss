@@ -75,23 +75,25 @@ describe('addFn', function addFnSuite() {
       );
 
       assert.ok(
-        dealParamsForBackOfTheYards.name in boss['Back of the Yards'].providers,
-        'No provider added to Back of the Yards for getConstructionDeals'
+        getConstructionDeals.name in boss['Back of the Yards'].providers,
+        'No provider added to Back of the Yards with getConstructionDeals key'
       );
 
       assert.ok(
-        dealParamsForCicero.name in boss.Cicero.providers,
-        'No provider added to Cicero for getConstructionDeals'
+        getConstructionDeals.name in boss.Cicero.providers,
+        'No provider added to Cicero with getConstructionDeals key'
       );
 
-      assert.deepEqual(boss['Back of the Yards'].getConstructionDeals, 
+      assert.deepEqual(
+        boss['Back of the Yards'].providers[getConstructionDeals.name],
         dealParamsForBackOfTheYards,
-        'Back of the Yards provider for getConstructionDeals not added.'
+        'Incorrect provider for Back of the Yards and getConstructionDeals'
       );
 
-      assert.deepEqual(boss.Cicero.getConstructionDeals, 
+      assert.deepEqual(
+        boss.Cicero.providers[getConstructionDeals.name],
         dealParamsForCicero,
-        'Cicero provider for getConstructionDeals not added.'
+        'Incorrect provider for Cicero and getConstructionDeals'
       );
 
       assert.ok(getConstructionDeals.name in boss['Back of the Yards']);
