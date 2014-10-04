@@ -51,11 +51,12 @@ Specification
     - addConstituent
     - addFn
     - fns, an object with function names as the keys and functions as the values
+    - constituents, an object that has constituent names as keys and `constituent` objects as values.
+      - Each `constituent` has:
+        - `providers`, a dictionary of function name keys and provider function values.
 
 **boss.addConstituent(constituentName)** =>
-  - Adds a `constituent` to `boss` using constituentName as the key.
-    - Each `constituent` has:
-      - `providers`, a dictionary of function name keys and provider function values.
+  - Adds a `constituent` to `boss.constituents` using constituentName as the key.
 
 **boss.addFn(opts)**
   - Where:
