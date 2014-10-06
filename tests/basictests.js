@@ -1,6 +1,7 @@
 var assert = require('assert');
 var wardboss = require('../wardboss');
 var sinon = require('sinon');
+var _ = require('lodash');
 
 // Functions and providers for the tests.
 
@@ -129,20 +130,27 @@ describe('run function', function runFnSuite() {
   var boss;
   var botyProviderSpy;
   var ciceroProviderSpy;
+  var getConstructionDealsLastCallOpts;
+  var getConstructionDealsCallCount = 0;
 
   beforeEach(function setUp() {
     sandbox = sinon.sandbox.create();
     botyProviderSpy = sandbox.spy(dealParamsForBackOfTheYards);
     ciceroProviderSpy = sandbox.spy(dealParamsForCicero);
-    getConstructionDealsSpy = sandbox.spy(getConstructionDeals);
+
+    function getConstructionDealsSpy(opts) {
+      getConstructionDealsCallCount += 1;
+      getConstructionDealsLastCallOpts = _.cloneDeep(opts);
+      return getConstructionDeals(opts);
+    }
 
     boss = wardboss.createBoss('vrdolyak');
 
     boss.addFn({
-      fn: getConstructionDeals,
+      fn: getConstructionDealsSpy,
       providers: {
-        'Back of the Yards': dealParamsForBackOfTheYards,
-        Cicero: dealParamsForCicero
+        'Back of the Yards': botyProviderSpy,
+        Cicero: ciceroProviderSpy
       }
     });
   });
@@ -153,28 +161,24 @@ describe('run function', function runFnSuite() {
     boss = null;
     botyProviderSpy = null;
     ciceroProviderSpy = null;
+    getConstructionDealsLastCallOpts = null;
+    getConstructionDealsCallCount = 0;
   });
 
   it('should call fn using the params from the Cicero provider',
     function testRunFn(testDone) {
-
-      boss.$.Cicero.getConstructionDeals({
-        done: checkCiceroFnCallOnNextTick
+      boss.$.Cicero.getConstructionDealsSpy({
+        done: checkCiceroFnCall
       });
 
-      function checkCiceroFnCallOnNextTick(error, deals) {
-        process.nextTick(function doCheck() {
-          checkCiceroFnCall(error, deals);
-        });
-      }
-
       function checkCiceroFnCall(error, deals) {
-        debugger;
-        assert.ok(ciceroProviderSpy.calledOnce, 
+        assert.ok(ciceroProviderSpy.calledOnce, 'Cicero provider not called.');
+
+        assert.equal(getConstructionDealsCallCount, 1,
           'The Cicero provider for getConstructionDeals was not called once.'
         );
         assert.equal(
-          getConstructionDealsSpy.getCall(0).args.zone, 'commercial',
+          getConstructionDealsLastCallOpts.zone, 'commercial',
           'getConstructionDeals was not called with opts from provider.'
         );
         testDone();

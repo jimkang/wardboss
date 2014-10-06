@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var masala = require('masala');
 
 function createBoss(bossname) {
   var boss = {
@@ -28,17 +29,19 @@ function createBoss(bossname) {
     var constituent = boss.$[constituentName];
     constituent[fn.name] = callFnWithProvider
 
-    function callFnWithProvider(done) {
+    function callFnWithProvider(overrideOpts) {
       var provider = constituent.providers[fn.name];
       provider(function passParamsToFn(error, params) {
-        if (error) {
-          throw error;
-          // TODO: Revisit.
-          return;
+        // var opts = _.defaults(overrideOpts, params);
+        var masalaResult = masala.apply(masala, [fn].concat(params));
+        // PROBLEM: What if the function returns another function?
+        if (typeof masalaResult === 'function') {
+          masalaResult = masalaResult(overrideOpts);
         }
-        else {
-          // TODO.
+        if (typeof masalaResult === 'function') {
+          masalaResult = masalaResult();
         }
+        return masalaResult;
       });
     };
   }
