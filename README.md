@@ -74,9 +74,9 @@ Specification
     - Adds a method with the name `fn.name` to each `constituent` with a value that is:
       - A function that calls a function using a parameters from the appropriate provider.
 
-**boss.&lt;constituent c&gt;.&lt;function f&gt;(params)** =>
+**boss.$.&lt;constituent c&gt;.&lt;function f&gt;(params)** =>
   - Gets provider `p` from `c`.
-  - Calls `p` to get arguments, which it passes to `f`.
+  - Calls `p` to get arguments, which it combines with `params` (params override arguments) and  passes to them `f`.
 
 Tests
 -----
