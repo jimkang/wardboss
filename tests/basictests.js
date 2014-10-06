@@ -186,4 +186,27 @@ describe('run function', function runFnSuite() {
     }
   );
 
+  it('should call fn using the params from the Back of the Yards provider',
+    function testRunFn(testDone) {
+      boss.$['Back of the Yards'].getConstructionDealsSpy({
+        done: checkBOTYFnCall
+      });
+
+      function checkBOTYFnCall(error, deals) {
+        assert.ok(botyProviderSpy.calledOnce,
+          'Back of the Yards provider not called.'
+        );
+
+        assert.equal(getConstructionDealsCallCount, 1,
+          'The Cicero provider for getConstructionDeals was not called once.'
+        );
+        assert.equal(
+          getConstructionDealsLastCallOpts.zone, 'municipal',
+          'getConstructionDeals was not called with opts from provider.'
+        );
+        testDone();
+      }
+    }
+  );
+
 });
