@@ -1,5 +1,43 @@
 var assert = require('assert');
 var wardboss = require('../wardboss');
+var sinon = require('sinon');
+
+// Functions and providers for the tests.
+
+function getConstructionDeals(opts) {
+  var deals = [];
+  if (opts.zone === 'municipal') {
+    deals = ['sewage', 'bus shelters'];
+  }
+  else if (opts.zone === 'commercial') {
+    deals = ['rail yard', 'fictional project'];
+  }
+  setTimeout(function passBack() {
+    opts.done(null, deals);
+  }, 
+  0);
+}
+
+function dealParamsForBackOfTheYards(done) {
+  setTimeout(function callDone() {
+    done(null, [{
+      zone: 'municipal'
+    }]);
+  },
+  0);
+}
+
+function dealParamsForCicero(done) {
+  setTimeout(function callDone() {
+    done(null, [{
+      zone: 'commercial'
+    }]);
+  },
+  0);
+}
+
+
+// The actual tests.
 
 describe('createBoss', function createBossSuite() {
   it('should create a boss object', 
@@ -30,38 +68,6 @@ describe('addFn', function addFnSuite() {
   it('should add `fn` to boss.fns', 
     function testAddConstituentToBoss(testDone) {
       var boss = wardboss.createBoss('rusty');
-
-      function getConstructionDeals(opts) {
-        var deals = [];
-        if (opts.zone === 'municipal') {
-          deals = ['sewage', 'bus shelters'];
-        }
-        else if (opts.zone === 'commercial') {
-          deals = ['rail yard', 'fictional project'];
-        }
-        setTimeout(function passBack() {
-          opts.done(null, deals);
-        }, 
-        0);
-      }
-
-      function dealParamsForBackOfTheYards(done) {
-        setTimeout(function callDone() {
-          done(null, [{
-            zone: 'municipal'
-          }]);
-        },
-        0);
-      }
-
-      function dealParamsForCicero(done) {
-        setTimeout(function callDone() {
-          done(null, [{
-            zone: 'commercial'
-          }]);
-        },
-        0);
-      }
 
       boss.addFn({
         fn: getConstructionDeals,
@@ -116,4 +122,64 @@ describe('addFn', function addFnSuite() {
       testDone();
     }
   );
+});
+
+describe('run function', function runFnSuite() {  
+  var sandbox;
+  var boss;
+  var botyProviderSpy;
+  var ciceroProviderSpy;
+
+  beforeEach(function setUp() {
+    sandbox = sinon.sandbox.create();
+    botyProviderSpy = sandbox.spy(dealParamsForBackOfTheYards);
+    ciceroProviderSpy = sandbox.spy(dealParamsForCicero);
+    getConstructionDealsSpy = sandbox.spy(getConstructionDeals);
+
+    boss = wardboss.createBoss('vrdolyak');
+
+    boss.addFn({
+      fn: getConstructionDeals,
+      providers: {
+        'Back of the Yards': dealParamsForBackOfTheYards,
+        Cicero: dealParamsForCicero
+      }
+    });
+  });
+
+  afterEach(function tearDown() {
+    sandbox.restore();
+
+    boss = null;
+    botyProviderSpy = null;
+    ciceroProviderSpy = null;
+  });
+
+  it('should call fn using the params from the Cicero provider',
+    function testRunFn(testDone) {
+
+      boss.$.Cicero.getConstructionDeals({
+        done: checkCiceroFnCallOnNextTick
+      });
+
+      function checkCiceroFnCallOnNextTick(error, deals) {
+        process.nextTick(function doCheck() {
+          checkCiceroFnCall(error, deals);
+        });
+      }
+
+      function checkCiceroFnCall(error, deals) {
+        debugger;
+        assert.ok(ciceroProviderSpy.calledOnce, 
+          'The Cicero provider for getConstructionDeals was not called once.'
+        );
+        assert.equal(
+          getConstructionDealsSpy.getCall(0).args.zone, 'commercial',
+          'getConstructionDeals was not called with opts from provider.'
+        );
+        testDone();
+      }
+    }
+  );
+
 });
