@@ -21,18 +21,18 @@ function getConstructionDeals(opts) {
 
 function dealParamsForBackOfTheYards(done) {
   setTimeout(function callDone() {
-    done(null, [{
+    done(null, {
       zone: 'municipal'
-    }]);
+    });
   },
   0);
 }
 
 function dealParamsForCicero(done) {
   setTimeout(function callDone() {
-    done(null, [{
+    done(null, {
       zone: 'commercial'
-    }]);
+    });
   },
   0);
 }
@@ -208,5 +208,101 @@ describe('run function', function runFnSuite() {
       }
     }
   );
+});
+
+describe('running non-opts-based functions', function runNonOptsFnSuite() {
+  function getSanitationJobs(isDominantEthnicity, daleyFavored, votesDelivered,
+    done) {
+
+    var jobs = votesDelivered/2;
+    if (!isDominantEthnicity) {
+      jobs /= 2;
+    }
+    if (daleyFavored) {
+      jobs *= 2;  
+    }    
+    
+    setTimeout(function passBack() {
+      done(null, jobs);
+    },
+    0);
+  }
+
+  function jobsParamsForBackOfTheYards(done) {
+    setTimeout(function callDone() {
+      done(null, [true, true]);
+    },
+    0);
+  }
+
+  function jobsParamsForCicero(done) {
+    setTimeout(function callDone() {
+      done(null, [true, false]);
+    },
+    0);
+  }
+
+  var sandbox;
+  var boss;
+  var botyProviderSpy;
+  var ciceroProviderSpy;
+  var getSanitationJobsLastCallArgs;
+  var getSanitationJobsCallCount = 0;
+
+  beforeEach(function setUp() {
+    sandbox = sinon.sandbox.create();
+    botyProviderSpy = sandbox.spy(jobsParamsForBackOfTheYards);
+    ciceroProviderSpy = sandbox.spy(jobsParamsForCicero);
+
+    function getSanitationJobsSpy(isDominantEthnicity, daleyFavored, 
+      votesDelivered, done) {
+
+      getSanitationJobsCallCount += 1;
+      getSanitationJobsLastCallArgs = _.cloneDeep(arguments);
+      return getSanitationJobs(isDominantEthnicity, daleyFavored, 
+        votesDelivered, done);
+    }
+
+    boss = wardboss.createBoss('vrdolyak');
+
+    boss.addFn({
+      fn: getSanitationJobsSpy,
+      providers: {
+        'Back of the Yards': botyProviderSpy,
+        Cicero: ciceroProviderSpy
+      }
+    });
+  });
+
+  afterEach(function tearDown() {
+    sandbox.restore();
+
+    boss = null;
+    botyProviderSpy = null;
+    ciceroProviderSpy = null;
+    getSanitationJobsLastCallArgs = null;
+    getSanitationJobsCallCount = 0;
+  });
+
+
+  it('should call fn using the params from the Cicero provider',
+    function testRunFn(testDone) {
+      boss.$.Cicero.getSanitationJobsSpy(20, checkCiceroFnCall);
+
+      function checkCiceroFnCall(error, deals) {
+        assert.ok(ciceroProviderSpy.calledOnce, 'Cicero provider not called.');
+
+        assert.equal(getSanitationJobsCallCount, 1,
+          'The Cicero provider for getSanitationJobs was not called once.'
+        );
+        assert.equal(getSanitationJobsLastCallArgs[0], true,
+          'getSanitationJobs was not called with opts from provider.'
+        );
+        assert.equal(deals, 10)
+        testDone();
+      }
+    }
+  );
 
 });
+

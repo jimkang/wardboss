@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var masala = require('masala');
 
 function createBoss(bossname) {
   var boss = {
@@ -29,19 +28,45 @@ function createBoss(bossname) {
     var constituent = boss.$[constituentName];
     constituent[fn.name] = callFnWithProvider
 
-    function callFnWithProvider(overrideOpts) {
+    function callFnWithProvider() {
+      var extemporaneousParams = Array.prototype.slice.call(arguments, 0);
+      var extemporaneousOpts;
+
+      if (extemporaneousParams.length === 1 && 
+        typeof extemporaneousParams[0] === 'object') {
+        extemporaneousOpts = extemporaneousParams[0];
+      }
+
       var provider = constituent.providers[fn.name];
       provider(function passParamsToFn(error, params) {
-        // var opts = _.defaults(overrideOpts, params);
-        var masalaResult = masala.apply(masala, [fn].concat(params));
-        // PROBLEM: What if the function returns another function?
-        if (typeof masalaResult === 'function') {
-          masalaResult = masalaResult(overrideOpts);
+        var result;
+
+        if (typeof params === 'object') {
+          if (Array.isArray(params)) {
+            // Assumes fn takes a "normal" list of arguments.            
+            var curried = _.curry(fn);
+            result = curried.apply(curried, params.concat(extemporaneousParams));
+          }
+          else {
+            // Assumes fn to be an opts-based function.
+            var opts = _.defaults(extemporaneousOpts, params);
+            result = fn(opts);
+          }
         }
-        if (typeof masalaResult === 'function') {
-          masalaResult = masalaResult();
+        else {
+          // Just try to run it with the non-object params.
+          result = fn(params);
         }
-        return masalaResult;
+        // var masalaResult = masala.apply(masala, [fn].concat(params));
+        // // PROBLEM: What if the function returns another function?
+        // if (typeof masalaResult === 'function') {
+        //   masalaResult = masalaResult(overrides);
+        // }
+        // if (typeof masalaResult === 'function') {
+        //   masalaResult = masalaResult();
+        // }
+        // return masalaResult;
+        return result;
       });
     };
   }

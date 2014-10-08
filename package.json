@@ -26,7 +26,6 @@
     "sinon": "^1.10.3"
   },
   "dependencies": {
-    "lodash": "^2.4.1",
-    "masala": "^1.3.0"
+    "lodash": "^2.4.1"
   }
 }
