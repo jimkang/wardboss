@@ -5,6 +5,8 @@ wardboss decides who gets what when they ask for it. In other words, it does bas
 
 It will call functions for you and provide parameters to those functions. However, the parameters it provides depending on which *constituent* the function is called for.
 
+<img src="https://raw.githubusercontent.com/jimkang/wardboss/master/img/vrdolyak.jpg" width="310" height="478" />
+
 So, if you call a function named `showJobs` for the constituent `bigjoerusty`, it will be passed the param ['committeeman']. However, if you call `showJobs` for the constituent `vrdolyak`, wardboss passes the params ['sanitation chief'], ['zoning permits'].
 
 Let's say you have a function that takes three params, like so:
@@ -47,8 +49,6 @@ Then, you call the function like so. You can pass along any params that are not 
     boss.bigjoerusty.showJobs(['look the other way'], function doneShowingJobs(error, result) {
       console.log('The jobs and favors will have been logged.');
     });
-
-<img src="https://raw.githubusercontent.com/jimkang/wardboss/master/img/vrdolyak.jpg" width="310" height="478" />
 
 Installation
 ------------
