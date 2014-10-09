@@ -48,6 +48,8 @@ Then, you call the function like so. You can pass along any params that are not 
       console.log('The jobs and favors will have been logged.');
     });
 
+<img src="https://raw.githubusercontent.com/jimkang/wardboss/master/img/vrdolyak.jpg" width="310" height="478" />
+
 Installation
 ------------
 
