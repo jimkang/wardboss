@@ -1,6 +1,6 @@
 {
   "name": "wardboss",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Dependency injection module. It decides who gets what when they ask for it.",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,8 @@
   "keywords": [
     "dependency",
     "injection",
-    "configuration"
+    "configuration",
+    "currying"
   ],
   "author": "Jim Kang",
   "license": "MIT",

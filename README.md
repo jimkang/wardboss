@@ -1,16 +1,24 @@
 wardboss
 ========
 
-wardboss decides who gets what when they ask for it. In other words, it does incredibly basic dependency injection.
+wardboss decides who gets what when they ask for it. In other words, it does basic dependency injection and currying.
+
+It will call functions for you and provide parameters to those functions. However, the parameters it provides depending on which *constituent* the function is called for.
+
+So, if you call a function named `showJobs` for the constituent `bigjoerusty`, it will be passed the param ['committeeman']. However, if you call `showJobs` for the constituent `vrdolyak`, wardboss passes the params ['sanitation chief'], ['zoning permits'].
+
+Let's say you have a function that takes three params, like so:
 
     function showJobs(jobs, owedfavors, done) {
       console.log(jobs, owedfavors);
       setTimeout(done, 0);
     }
 
+You create a wardboss.
+
     var boss = wardboss.createBoss();
-    boss.addConstituent('bigjoerusty');
-    boss.addConstituent('vrdolyak');
+
+After that, you can register functions with wardboss, giving *providers* for each constituent. A provider takes a callback, to which it passes an array of (all or some of) the params that the function should get. 
 
     boss.addFn({
       fn: showJobs,
@@ -23,12 +31,14 @@ wardboss decides who gets what when they ask for it. In other words, it does inc
         },
         vrdolyak: function provideShowJobsArgs(done) {
           setTimeout(function callDone() {
-            done(null, [['sanitation chief'], ['zoning permits']]]);
+            done(null, [['sanitation chief'], ['zoning permits']]);
           },
           0);
         }
       }
     }
+
+Then, you call the function like so. You can pass along any params that are not provided by the providers.
 
     boss.vrdolyak.showJobs(function doneShowingJobs(error, result) {
       console.log('The jobs and favors will have been logged.');
