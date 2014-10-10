@@ -42,12 +42,27 @@ After that, you can register functions with wardboss, giving *providers* for eac
 
 Then, you call the function like so. You can pass along any params that are not provided by the providers.
 
-    boss.vrdolyak.showJobs(function doneShowingJobs(error, result) {
-      console.log('The jobs and favors will have been logged.');
+    boss.$.vrdolyak.showJobs({
+      context: {
+        discussionLocation: 'cityHall'
+      },
+      params: [
+        function doneShowingJobs(error, result) {
+          console.log('The jobs and favors will have been logged.');
+        }
+      ]
     });
 
-    boss.bigjoerusty.showJobs(['look the other way'], function doneShowingJobs(error, result) {
-      console.log('The jobs and favors will have been logged.');
+    boss.$.bigjoerusty.showJobs({
+      context: {
+        discussionLocation: 'alley'
+      },
+      params: [
+        ['look the other way'], 
+        function doneShowingJobs(error, result) {
+          console.log('The jobs and favors will have been logged.');
+        }
+      ]
     });
 
 Installation
@@ -86,7 +101,7 @@ Specification
     - Adds a method with the name `fn.name` to each `constituent` with a value that is:
       - A function that calls a function using a parameters from the appropriate provider.
 
-**boss.$.&lt;constituent c&gt;.&lt;function f&gt;(context, params)** =>
+**boss.$.&lt;constituent c&gt;.&lt;function f&gt;({context, params})** =>
   - Gets provider `p` from `c`.
   - Calls `p` with `context` to get arguments, which it combines with `params` (params override arguments) and  passes to them `f`.
 

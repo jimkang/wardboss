@@ -167,14 +167,16 @@ describe('run function', function runFnSuite() {
 
   it('should call fn using the params from the Cicero provider',
     function testRunFn(testDone) {
-      boss.$.Cicero.getConstructionDealsSpy(null, {
-        done: checkCiceroFnCall
+      boss.$.Cicero.getConstructionDealsSpy({
+        params: {
+          done: checkCiceroFnCall
+        }
       });
 
       function checkCiceroFnCall(error, deals) {
         assert.ok(ciceroProviderSpy.calledOnce, 'Cicero provider not called.');
-        assert.ok(ciceroProviderSpy.calledWith(null),
-          'null context not passed to Cicero provider.'
+        assert.ok(ciceroProviderSpy.calledWith(undefined),
+          'undefined context not passed to Cicero provider.'
         );
 
         assert.equal(getConstructionDealsCallCount, 1,
@@ -195,8 +197,11 @@ describe('run function', function runFnSuite() {
         stuff: 'things'
       };
 
-      boss.$['Back of the Yards'].getConstructionDealsSpy(context, {
-        done: checkBOTYFnCall
+      boss.$['Back of the Yards'].getConstructionDealsSpy({
+        context: context, 
+        params: {
+          done: checkBOTYFnCall
+        }
       });
 
       function checkBOTYFnCall(error, deals) {
@@ -297,7 +302,9 @@ describe('running non-opts-based functions', function runNonOptsFnSuite() {
 
   it('should call fn using the params from the Cicero provider',
     function testRunFn(testDone) {
-      boss.$.Cicero.getSanitationJobsSpy(null, 20, checkCiceroFnCall);
+      boss.$.Cicero.getSanitationJobsSpy({
+        params: [20, checkCiceroFnCall]
+      });
 
       function checkCiceroFnCall(error, deals) {
         assert.ok(ciceroProviderSpy.calledOnce, 'Cicero provider not called.');

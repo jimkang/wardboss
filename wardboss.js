@@ -28,14 +28,14 @@ function createBoss(bossname) {
     var constituent = boss.$[constituentName];
     constituent[fn.name] = callFnWithProvider
 
-    function callFnWithProvider() {
-      var context = arguments[0];
-      var extemporaneousParams = Array.prototype.slice.call(arguments, 1);
-      var extemporaneousOpts;
+    function callFnWithProvider(callOpts) {
+      var context = callOpts.context;      
 
-      if (extemporaneousParams.length === 1 && 
-        typeof extemporaneousParams[0] === 'object') {
-        extemporaneousOpts = extemporaneousParams[0];
+      if (Array.isArray(callOpts.params)) {
+        var extemporaneousParams = callOpts.params;
+      }
+      else {
+        var extemporaneousOpts = callOpts.params;
       }
 
       var provider = constituent.providers[fn.name];
