@@ -29,7 +29,8 @@ function createBoss(bossname) {
     constituent[fn.name] = callFnWithProvider
 
     function callFnWithProvider() {
-      var extemporaneousParams = Array.prototype.slice.call(arguments, 0);
+      var context = arguments[0];
+      var extemporaneousParams = Array.prototype.slice.call(arguments, 1);
       var extemporaneousOpts;
 
       if (extemporaneousParams.length === 1 && 
@@ -38,7 +39,7 @@ function createBoss(bossname) {
       }
 
       var provider = constituent.providers[fn.name];
-      provider(function passParamsToFn(error, params) {
+      provider(context, function passParamsToFn(error, params) {
         var result;
 
         if (typeof params === 'object') {
@@ -57,15 +58,7 @@ function createBoss(bossname) {
           // Just try to run it with the non-object params.
           result = fn(params);
         }
-        // var masalaResult = masala.apply(masala, [fn].concat(params));
-        // // PROBLEM: What if the function returns another function?
-        // if (typeof masalaResult === 'function') {
-        //   masalaResult = masalaResult(overrides);
-        // }
-        // if (typeof masalaResult === 'function') {
-        //   masalaResult = masalaResult();
-        // }
-        // return masalaResult;
+
         return result;
       });
     };

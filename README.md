@@ -3,7 +3,7 @@ wardboss
 
 wardboss decides who gets what when they ask for it. In other words, it does basic dependency injection and currying.
 
-It will call functions for you and provide parameters to those functions. However, the parameters it provides depending on which *constituent* the function is called for.
+wardboss has constituents and functions. When it calls those functions, different parameters are provided to those functions depending on the constituent for which it is being called.
 
 <img src="https://raw.githubusercontent.com/jimkang/wardboss/master/img/vrdolyak.jpg" width="310" height="478" />
 
@@ -25,13 +25,13 @@ After that, you can register functions with wardboss, giving *providers* for eac
     boss.addFn({
       fn: showJobs,
       providers: {
-        bigjoerusty: function provideShowJobsArgs(done) {
+        bigjoerusty: function provideShowJobsArgs(context, done) {
           setTimeout(function callDone() {
             done(null, [['committeeman']]);
           },
           0);
         },
-        vrdolyak: function provideShowJobsArgs(done) {
+        vrdolyak: function provideShowJobsArgs(context, done) {
           setTimeout(function callDone() {
             done(null, [['sanitation chief'], ['zoning permits']]);
           },
@@ -77,8 +77,8 @@ Specification
       - `providers`, an object in which:
         - The keys correspond to `constituent` names
         - The values are functions that:
-          - Take a callback, `done`.
-          - Call it with `error`, `params`, where:
+          - Take a `context` and a callback, `done`.
+          - Calls it with `error`, `params`, where:
             - `params` is an array of arguments to be passed to `fn`.
   - =>
     - Adds `fn` to `boss.fns`.
@@ -86,9 +86,9 @@ Specification
     - Adds a method with the name `fn.name` to each `constituent` with a value that is:
       - A function that calls a function using a parameters from the appropriate provider.
 
-**boss.$.&lt;constituent c&gt;.&lt;function f&gt;(params)** =>
+**boss.$.&lt;constituent c&gt;.&lt;function f&gt;(context, params)** =>
   - Gets provider `p` from `c`.
-  - Calls `p` to get arguments, which it combines with `params` (params override arguments) and  passes to them `f`.
+  - Calls `p` with `context` to get arguments, which it combines with `params` (params override arguments) and  passes to them `f`.
 
 Tests
 -----
